@@ -73,12 +73,7 @@ void Application::start()
 					while (ASensorEventQueue_getEvents(m_engine->sensorEventQueue,
 									&event, 1) > 0)
 					{
-						LOGI(
-							"accelerometer: x=%f y=%f z=%f",
-							event.acceleration.x,
-							event.acceleration.y,
-							event.acceleration.z
-						);
+						//process sensor data
 					}
 				}
 			}
@@ -192,15 +187,22 @@ int Application::initDisplay(struct engine* engine)
 	return 0;
 }
 
-void Application::termDisplay(struct engine* engine) {
-	if (engine->display != EGL_NO_DISPLAY) {
+void Application::termDisplay(struct engine* engine)
+{
+	if (engine->display != EGL_NO_DISPLAY)
+	{
 		eglMakeCurrent(engine->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-		if (engine->context != EGL_NO_CONTEXT) {
+
+		if (engine->context != EGL_NO_CONTEXT)
+		{
 			eglDestroyContext(engine->display, engine->context);
 		}
-		if (engine->surface != EGL_NO_SURFACE) {
+
+		if (engine->surface != EGL_NO_SURFACE)
+		{
 			eglDestroySurface(engine->display, engine->surface);
 		}
+
 		eglTerminate(engine->display);
 	}
 	engine->animating = 0;
@@ -275,18 +277,30 @@ int32_t Application::engine_handle_input(
 	struct engine* engine = (struct engine*)app->userData;
 	if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION)
 	{
+		int pointsCount = AMotionEvent_getPointerCount(event);
+		for(int pointIdx=0; pointIdx<pointsCount; ++pointIdx)
+		{
+			float pointX = AMotionEvent_getX(event,pointIdx);
+			float pointY = AMotionEvent_getY(event,pointIdx);
+			LOGI("Touch event x=%f, y=%f",pointX,pointY);
+		}
+
+		AMotionEvent_getHistorySize(event);
+
 		engine->animating = 1;
 		engine->state.x = AMotionEvent_getX(event, 0);
 		engine->state.y = AMotionEvent_getY(event, 0);
 
 		return 1;
 	}
+
 	return 0;
 }
 
 void Application::draw(struct engine* engine)
 {
-	if (engine->display == NULL) {
+	if (engine->display == NULL)
+	{
 		// No display.
 		LOGI("No display");
 		return;
@@ -295,6 +309,4 @@ void Application::draw(struct engine* engine)
 	m_frameDrawer.drawFrame(m_drawables);
 
 	eglSwapBuffers(engine->display, engine->surface);
-
-	LOGI("Draw finished");
 }

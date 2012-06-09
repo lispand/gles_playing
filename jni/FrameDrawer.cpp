@@ -33,14 +33,11 @@ void FrameDrawer::drawFrame(std::vector<IDrawable*> drawables)
 	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	checkGlError("glClear");
 
-	LOGI("!!! Start drawing");
-
 	int i = 0;
 	for(std::vector<IDrawable*>::iterator drawable = drawables.begin();
 		drawable != drawables.end();
 		++drawable)
 	{
-		LOGI("!!! Draw %i element",i);
 		++i;
 		(*drawable)->draw();
 	}

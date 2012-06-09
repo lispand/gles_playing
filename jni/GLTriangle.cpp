@@ -63,19 +63,15 @@ GLTriangle::GLTriangle()
 
 	m_position = glGetAttribLocation(m_program, "vPosition");
 	checkGlError("glGetAttribLocation");
-	LOGI("glGetAttribLocation(\"vPosition\") = %d\n", m_position);
 
 	m_color = glGetAttribLocation(m_program, "vColor");
 	checkGlError("glGetAttribLocation(vColor)");
-	LOGI("glGetAttribLocation(\"vColor\") = %d\n", m_color);
 
 	m_texturePosition = glGetAttribLocation(m_program,"vTexPosition");
 	checkGlError("glGetAttribLocation(vTexPosition)");
-	LOGI("glGetAttribLocation(\"vTexPosition\") = %d\n", m_texturePosition);
 
 	m_textureLocation = glGetUniformLocation(m_program, "fTexture");
 	checkGlError("glGetUniformLocation(fTexture)");
-	LOGI("glGetUniformLocation(\"fTexture\") = %d\n", m_textureLocation);
 
 	this->bufferSetup();
 	this->useTexture();
