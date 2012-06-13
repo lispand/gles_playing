@@ -14,7 +14,10 @@
         
         <activity android:name="android.app.NativeActivity"
                 android:label="@string/app_name"
-                android:configChanges="orientation|keyboardHidden">
+                android:configChanges="orientation|keyboardHidden"
+                android:screenOrientation="landscape"
+                android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                
             <!-- Указываем название библиотеки, которая содержит NativeActivity -->
             <meta-data android:name="android.app.lib_name"
                     android:value="XOandroid" />
