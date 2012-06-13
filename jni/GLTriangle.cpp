@@ -10,54 +10,77 @@
 #include "SimpleGlFuncs.h"
 #include "AndroidLogs.h"
 
-#include "picture.c"
+//#include "picture.c"
+#include "love-heart.c"
 
 
 static const char gVertexShader[] =
-    "attribute vec4 vPosition;\n"
-    "attribute vec4 vColor;\n"
-    "attribute vec4 vTexPosition;\n"
-    "\n"
-    "varying mediump vec4 fColor;"
-    "varying mediump vec2 fTexPosition;\n"
-    "\n"
-    "void main() {\n"
-    "  gl_Position = vPosition;\n"
-    "  fColor = vColor;\n"
-    "  fTexPosition = vTexPosition.xy;\n"
-    "}\n";
+	"attribute vec4 vPosition;\n"
+	"attribute vec4 vColor;\n"
+	"attribute vec4 vTexPosition;\n"
+	"\n"
+	"varying mediump vec4 fColor;"
+	"varying mediump vec2 fTexPosition;\n"
+	"\n"
+	"void main() {\n"
+	"  gl_Position = vPosition;\n"
+	"  fColor = vColor;\n"
+	"  fTexPosition = vTexPosition.xy;\n"
+	"}\n";
 
 static const char gFragmentShader[] =
-    "precision mediump float;\n"
-    "\n"
-    "varying mediump vec4 fColor;\n"
-    "varying mediump vec2 fTexPosition;\n"
-    "\n"
-    "uniform sampler2D fTexture;\n"
-    "\n"
-    "vec4 texColor;\n"
-    "\n"
-    "void main() {\n"
-    "  texColor = texture2D(fTexture, fTexPosition);"
-    "  gl_FragColor = texColor;\n"
-    "}\n";
+	"precision mediump float;\n"
+	"\n"
+	"varying mediump vec4 fColor;\n"
+	"varying mediump vec2 fTexPosition;\n"
+	"\n"
+	"uniform sampler2D fTexture;\n"
+	"\n"
+	"vec4 texColor;\n"
+	"\n"
+	"void main() {\n"
+	"  texColor = texture2D(fTexture, fTexPosition);"
+	"  gl_FragColor = texColor;\n"
+	"}\n";
 
 static const GLfloat gTriangleVertices[] = {
-         //vertex position
-         0.0f,  0.9f, 0.0f,
-        -0.9f, -0.9f, 0.0f,
-         0.9f, -0.9f,  0.0f,
-         //vertex color
-         0.8f, 0.5f,  0.5f,
-         0.8f, 0.5f, 0.5f,
-         0.8f, 0.5f, 0.5f,
-         //texture coord
-         0.0, 0.0,
-         0.0, 1.0,
-         1.0, 0.0
+	 //vertex position
+	 0.0f,  0.9f, 0.0f,
+	-0.9f, -0.9f, 0.0f,
+	 0.9f, -0.9f,  0.0f,
+	 //vertex color
+	 0.8f, 0.5f,  0.5f,
+	 0.8f, 0.5f, 0.5f,
+	 0.8f, 0.5f, 0.5f,
+	 //texture coord
+	 0.0, 0.0,
+	 0.0, 1.0,
+	 1.0, 0.0
 };
 
-GLTriangle::GLTriangle()
+GLTriangle::GLTriangle(DrawConfig config)
+	:m_drawConfig(config)
+{
+	this->init();
+
+	this->bufferSetup();
+	this->useTexture();
+}
+
+GLTriangle::GLTriangle(int x, int y, DrawConfig config)
+	:m_drawConfig(config)
+{
+	this->init();
+
+	this->bufferSetup(x,y);
+	this->useTexture();
+}
+
+GLTriangle::~GLTriangle() {
+	// TODO Auto-generated destructor stub
+}
+
+void GLTriangle::init()
 {
 	m_program = createProgram(gVertexShader, gFragmentShader);
 
@@ -73,19 +96,12 @@ GLTriangle::GLTriangle()
 	m_textureLocation = glGetUniformLocation(m_program, "fTexture");
 	checkGlError("glGetUniformLocation(fTexture)");
 
-	this->bufferSetup();
-	this->useTexture();
-}
-
-GLTriangle::~GLTriangle() {
-        // TODO Auto-generated destructor stub
+	glGenBuffers(1,&m_buffer);
+	checkGlError("GLTriangle::bufferSetup glGenBuffers");
 }
 
 void GLTriangle::bufferSetup()
 {
-	glGenBuffers(1,&m_buffer);
-	checkGlError("GLTriangle::bufferSetup glGenBuffers");
-
 	glBindBuffer(GL_ARRAY_BUFFER,m_buffer);
 	checkGlError("GLTriangle::bufferSetup glBufferData");
 
@@ -93,6 +109,56 @@ void GLTriangle::bufferSetup()
 		GL_ARRAY_BUFFER,
 		sizeof(float)* ( (3+3)*3 + 3*2),
 		gTriangleVertices,
+		GL_DYNAMIC_DRAW
+	);
+	checkGlError("GLTriangle::bufferSetup glBufferData");
+}
+
+void GLTriangle::bufferSetup(int x, int y)
+{
+	LOGI("GLTriangle::bufferSetup( x=%d, y=%d )",x,y);
+
+	GLfloat data[] = {
+		//vertex position
+		 0.0f,  0.1f, 0.0f,
+		-0.1f, -0.1f, 0.0f,
+		 0.1f, -0.1f,  0.0f,
+		 //vertex color
+		 0.8f, 0.5f,  0.5f,
+		 0.8f, 0.5f, 0.5f,
+		 0.8f, 0.5f, 0.5f,
+		 //texture coord
+		 0.5, 1.0,
+		 0.0, 0.0,
+		 1.0, 0.0
+	};
+
+	float width = (float) m_drawConfig.getWidth();
+	float height = (float) m_drawConfig.getHeight();
+
+	float widthDelta = 2 * ( (float)x  - width/2.0f ) / width;
+	float heightDelta = 2* ( height / 2.0f - (float)y ) / height;
+
+
+
+	LOGI("GLTriangle::bufferSetup widthDelta=%f, heightDelta=%f", widthDelta, heightDelta);
+
+	data[0] += widthDelta;
+	data[1] += heightDelta;
+
+	data[3] += widthDelta;
+	data[4] += heightDelta;
+
+	data[6] += widthDelta;
+	data[7] += heightDelta;
+
+	glBindBuffer(GL_ARRAY_BUFFER,m_buffer);
+	checkGlError("GLTriangle::bufferSetup glBufferData");
+
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		sizeof(float)* ( (3+3)*3 + 3*2),
+		data,
 		GL_DYNAMIC_DRAW
 	);
 	checkGlError("GLTriangle::bufferSetup glBufferData");
@@ -184,11 +250,11 @@ void GLTriangle::useTexture()
 	glTexImage2D(
 		(GLenum) GL_TEXTURE_2D,
 		(GLint) 0,
-		(GLint) GL_RGB,
+		(GLint) GL_RGBA,
 		(GLsizei) gimp_image.width,
 		(GLsizei) gimp_image.height,
 		(GLint) 0,
-		(GLenum) GL_RGB,
+		(GLenum) GL_RGBA,
 		(GLenum) GL_UNSIGNED_BYTE,
 		(const GLvoid*) gimp_image.pixel_data
 	);

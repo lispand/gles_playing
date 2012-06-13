@@ -19,6 +19,7 @@
 #include "IDrawable.h"
 
 struct engine;
+class DrawConfigPrivate;
 
 class Application
 {
@@ -48,6 +49,8 @@ private:
 
 	struct engine* m_engine;
 	struct android_app* m_state;
+
+	DrawConfigPrivate* m_configPrivate;
 };
 
 //from main

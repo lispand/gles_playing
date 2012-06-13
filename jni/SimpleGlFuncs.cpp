@@ -8,7 +8,6 @@
 #include "SimpleGlFuncs.h"
 
 #include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,42 +118,3 @@ GLuint createProgram(
     }
     return program;
 }
-
-
-#include "GLTriangle.h"
-
-GLTriangle* m_triangle = NULL;
-
-bool setupGraphics(int w, int h) {
-        checkGlError("start SetupGraphisc");
-    printGLString("Version", GL_VERSION);
-    printGLString("Vendor", GL_VENDOR);
-    printGLString("Renderer", GL_RENDERER);
-    printGLString("Extensions", GL_EXTENSIONS);
-
-    glViewport(0, 0, w, h);
-    checkGlError("glViewport");
-
-    m_triangle = new GLTriangle();
-    float a[] = {0.0,0.5,0.0};
-    //m_triangle->setA(a);
-
-    return true;
-}
-
-//void renderFrame() {
-//    static float grey;
-//    grey += 0.01f;
-//    if (grey > 1.0f) {
-//        grey = 0.0f;
-//    }
-//    glClearColor(0, grey, grey, 1.0f);
-//    checkGlError("glClearColor");
-//    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-//    checkGlError("glClear");
-//
-//    if(m_triangle!=NULL)
-//    {
-//        m_triangle->draw();
-//    }
-//}

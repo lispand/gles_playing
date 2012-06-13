@@ -12,11 +12,14 @@
 #include "AndroidLogs.h"
 #include "SimpleGlFuncs.h"
 #include "GLTriangle.h"
+#include "DrawConfig.h"
+#include "DrawConfigPrivate.h"
 
 
 Application::Application(struct android_app* state, struct engine* engine)
 	:m_state(state)
 	,m_engine(engine)
+	,m_configPrivate(new DrawConfigPrivate() )
 {
 	// Prepare to monitor accelerometer
 	m_engine->sensorManager = ASensorManager_getInstance();
@@ -100,7 +103,9 @@ void Application::start()
 
 void Application::initTriangles()
 {
-	m_drawables.push_back(new GLTriangle());
+	m_drawables.push_back(
+		new GLTriangle( 20, 20, DrawConfig(m_configPrivate) )
+	);
 }
 
 int Application::initDisplay(struct engine* engine)
@@ -167,6 +172,9 @@ int Application::initDisplay(struct engine* engine)
 	engine->height = h;
 	engine->state.angle = 0;
 
+	m_configPrivate->setWidth(w);
+	m_configPrivate->setHeight(h);
+
 	checkGlError("before all start");
 
 	// Initialize GL state.
@@ -180,7 +188,8 @@ int Application::initDisplay(struct engine* engine)
 	glDisable(GL_DEPTH_TEST);
 	checkGlError("GL_DEPTH_TEST");
 
-	setupGraphics(w,h);
+	glViewport(0, 0, w, h);
+	checkGlError("glViewport");
 
 	this->initTriangles();
 
@@ -283,6 +292,14 @@ int32_t Application::engine_handle_input(
 			float pointX = AMotionEvent_getX(event,pointIdx);
 			float pointY = AMotionEvent_getY(event,pointIdx);
 			LOGI("Touch event x=%f, y=%f",pointX,pointY);
+
+			m_drawables.push_back(
+				new GLTriangle(
+					(int)pointX,
+					(int)pointY,
+					DrawConfig(m_configPrivate)
+				)
+			);
 		}
 
 		AMotionEvent_getHistorySize(event);

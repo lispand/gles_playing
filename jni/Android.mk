@@ -10,7 +10,9 @@ LOCAL_SRC_FILES := \
 	GLTriangle.cpp\
 	FrameDrawer.cpp\
 	IDrawable.cpp\
-	Application.cpp
+	Application.cpp\
+	DrawConfig.cpp\
+	DrawConfigPrivate.cpp
 
 ### Load additional libs 
 LOCAL_LDLIBS    := -llog -landroid -lEGL -lGLESv2
