@@ -11,7 +11,7 @@
 
 FrameDrawer::FrameDrawer()
 {
-	m_grey = 0.0f;
+	m_grey = 0.5f;
 }
 
 FrameDrawer::~FrameDrawer()
@@ -22,11 +22,6 @@ FrameDrawer::~FrameDrawer()
 
 void FrameDrawer::drawFrame(std::vector<IDrawable*> drawables)
 {
-	m_grey += 0.01f;
-	if (m_grey > 1.0f) {
-		m_grey = 0.0f;
-	}
-
 	glClearColor(0, m_grey, m_grey, 1.0f);
 	checkGlError("glClearColor");
 
