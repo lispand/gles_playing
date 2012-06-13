@@ -10,8 +10,8 @@
 #include "SimpleGlFuncs.h"
 #include "AndroidLogs.h"
 
-//#include "picture.c"
-#include "love-heart.c"
+#include "picture.c"
+//#include "love-heart.c"
 
 
 static const char gVertexShader[] =
@@ -116,8 +116,6 @@ void GLTriangle::bufferSetup()
 
 void GLTriangle::bufferSetup(int x, int y)
 {
-	LOGI("GLTriangle::bufferSetup( x=%d, y=%d )",x,y);
-
 	GLfloat data[] = {
 		//vertex position
 		 0.0f,  0.1f, 0.0f,
@@ -128,8 +126,8 @@ void GLTriangle::bufferSetup(int x, int y)
 		 0.8f, 0.5f, 0.5f,
 		 0.8f, 0.5f, 0.5f,
 		 //texture coord
-		 0.5, 1.0,
 		 0.0, 0.0,
+		 0.0, 1.0,
 		 1.0, 0.0
 	};
 
@@ -138,10 +136,6 @@ void GLTriangle::bufferSetup(int x, int y)
 
 	float widthDelta = 2 * ( (float)x  - width/2.0f ) / width;
 	float heightDelta = 2* ( height / 2.0f - (float)y ) / height;
-
-
-
-	LOGI("GLTriangle::bufferSetup widthDelta=%f, heightDelta=%f", widthDelta, heightDelta);
 
 	data[0] += widthDelta;
 	data[1] += heightDelta;
@@ -250,11 +244,11 @@ void GLTriangle::useTexture()
 	glTexImage2D(
 		(GLenum) GL_TEXTURE_2D,
 		(GLint) 0,
-		(GLint) GL_RGBA,
+		(GLint) GL_RGB,
 		(GLsizei) gimp_image.width,
 		(GLsizei) gimp_image.height,
 		(GLint) 0,
-		(GLenum) GL_RGBA,
+		(GLenum) GL_RGB,
 		(GLenum) GL_UNSIGNED_BYTE,
 		(const GLvoid*) gimp_image.pixel_data
 	);
