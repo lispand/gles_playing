@@ -286,23 +286,7 @@ int32_t Application::engine_handle_input(
 	struct engine* engine = (struct engine*)app->userData;
 	if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION)
 	{
-		int pointsCount = AMotionEvent_getPointerCount(event);
-		for(int pointIdx=0; pointIdx<pointsCount; ++pointIdx)
-		{
-			float pointX = AMotionEvent_getX(event,pointIdx);
-			float pointY = AMotionEvent_getY(event,pointIdx);
-			LOGI("Touch event x=%f, y=%f",pointX,pointY);
-
-			m_drawables.push_back(
-				new GLTriangle(
-					(int)pointX,
-					(int)pointY,
-					DrawConfig(m_configPrivate)
-				)
-			);
-		}
-
-		AMotionEvent_getHistorySize(event);
+		this->onTouchEvent(event);
 
 		engine->animating = 1;
 		engine->state.x = AMotionEvent_getX(event, 0);
@@ -312,6 +296,33 @@ int32_t Application::engine_handle_input(
 	}
 
 	return 0;
+}
+
+void Application::onTouchEvent(AInputEvent* event)
+{
+	if(AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN)
+	{
+		this->onTouchDownEvent(event);
+	}
+}
+
+void Application::onTouchDownEvent(AInputEvent* event)
+{
+	int pointsCount = AMotionEvent_getPointerCount(event);
+
+	for(int pointIdx=0; pointIdx<pointsCount; ++pointIdx)
+	{
+		float pointX = AMotionEvent_getX(event,pointIdx);
+		float pointY = AMotionEvent_getY(event,pointIdx);
+
+		m_drawables.push_back(
+			new GLTriangle(
+				(int)pointX,
+				(int)pointY,
+				DrawConfig(m_configPrivate)
+			)
+		);
+	}
 }
 
 void Application::draw(struct engine* engine)

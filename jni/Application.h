@@ -42,6 +42,9 @@ public:
 
 	void start();
 private:
+	void onTouchEvent(AInputEvent* event);
+	void onTouchDownEvent(AInputEvent* event);
+
 
 //Our drawer
 	FrameDrawer m_frameDrawer;
